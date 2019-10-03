@@ -2,6 +2,9 @@
 #include <fstream>
 #include <vector>
 #include <exception>
+#include <algorithm>
+
+std::vector<int> readChecked(const std::string& fileName);
 
 void printUsage() {
     std::cout << "Command Line Todo application" << std::endl;
@@ -31,13 +34,18 @@ void listTasks(const std::string& fileName) {
     std::string textRows;
     std::ifstream inputStream;
     inputStream.open(fileName);
+    std::vector<int> checkedTasks = readChecked("vector.txt");
 
     if (inputRowsCount == 0) {
         std::cout << "No todos for today! :)";
     } else {
         for (int i = 0; i < inputRowsCount; ++i) {
             std::getline(inputStream, textRows);
-            std::cout << i + 1 << " - " << textRows << std::endl;
+            if (std::count(checkedTasks.begin(), checkedTasks.end(), i)) {
+                std::cout << i + 1 << " - [X] " << textRows << std::endl;
+            } else {
+                std::cout << i + 1 << " - [ ] " << textRows << std::endl;
+            }
         }
     }
     inputStream.close();
@@ -76,6 +84,29 @@ void removeTask(const std::string& fileName, int taskIndex) {
     outputStream.close();
 }
 
+void checkTask(const std::string& outputFileName, int taskIndex) {
+    std::ofstream outputStream;
+    outputStream.open(outputFileName, std::ios::app);
+    outputStream << taskIndex << std::endl;
+    outputStream.close();
+}
+
+std::vector<int> readChecked(const std::string& fileName) {
+    std::ifstream inputStream;
+    inputStream.open(fileName);
+    std::vector<int> output;
+    /*
+    while(!inputStream.eof()) {
+        std::string tempStr;
+        std::getline(inputStream, tempStr);
+        output.push_back(std::stoi(tempStr));
+    }
+    */
+    output = {1, 3};
+    inputStream.close();
+    return output;
+}
+
 int main(int argc, char** argv) {
 
     if (argc == 1) {
@@ -98,12 +129,32 @@ int main(int argc, char** argv) {
             catch(std::invalid_argument& e){
                 std::cout << "Unable to remove: index is not a number" << std::endl;
             }
-            if (std::stoi(argv[2]) > utilityInputRowCounter("input.txt")) {
+            if (std::stoi(argv[2]) > utilityInputRowCounter("input.txt") || std::stoi(argv[2]) < 1) {
                 std::cout << "Unable to remove: Index is out of bound" << std::endl;
             } else {
                 removeTask("input.txt", std::stoi(argv[2]));
             }
         }
+    } else if (std::string(argv[1]) == "-c") {
+        if (argc == 2) {
+            std::cout << "Unable to check: No index provided" << std::endl;
+        } else {
+            try {
+                std::stoi(argv[2]);
+            }
+            catch(std::invalid_argument& e){
+                std::cout << "Unable to check: index is not a number" << std::endl;
+            }
+            if (std::stoi(argv[2]) > utilityInputRowCounter("input.txt") || std::stoi(argv[2]) < 1) {
+                std::cout << "Unable to check: Index is out of bound" << std::endl;
+            } else {
+                checkTask("vector.txt",std::stoi(argv[2]) - 1);
+                std::cout << "Task completed" << std::endl;
+            }
+        }
+    } else {
+        std::cout << "Unsupported argument" << std::endl;
+        printUsage();
     }
 
     return 0;
