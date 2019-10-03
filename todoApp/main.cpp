@@ -87,7 +87,7 @@ void removeTask(const std::string& fileName, int taskIndex) {
 void checkTask(const std::string& outputFileName, int taskIndex) {
     std::ofstream outputStream;
     outputStream.open(outputFileName, std::ios::app);
-    outputStream << taskIndex << std::endl;
+    outputStream << taskIndex << " ";
     outputStream.close();
 }
 
@@ -95,14 +95,12 @@ std::vector<int> readChecked(const std::string& fileName) {
     std::ifstream inputStream;
     inputStream.open(fileName);
     std::vector<int> output;
-    /*
-    while(!inputStream.eof()) {
-        std::string tempStr;
-        std::getline(inputStream, tempStr);
-        output.push_back(std::stoi(tempStr));
+
+    int temp;
+    while (inputStream >> temp) {
+        output.push_back(temp);
     }
-    */
-    output = {1, 3};
+
     inputStream.close();
     return output;
 }
