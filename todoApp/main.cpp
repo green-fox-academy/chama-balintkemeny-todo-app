@@ -33,7 +33,7 @@ void listTasks() {
     std::ifstream inputFile;
     inputFile.open("input.txt");
 
-    if (inputRowsCount == 1) {
+    if (inputRowsCount == 0) {
         std::cout << "No todos for today! :)";
     } else {
         for (int i = 0; i < inputRowsCount; ++i) {
@@ -41,6 +41,8 @@ void listTasks() {
             std::cout << i + 1 << " - " << textRows << std::endl;
         }
     }
+    inputFile.close();
+    
 }
 
 int main(int argc, char** argv) {
