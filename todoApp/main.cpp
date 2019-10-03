@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <exception>
 
 void printUsage() {
     std::cout << "Command Line Todo application" << std::endl;
@@ -88,8 +89,23 @@ int main(int argc, char** argv) {
             addTask("input.txt", std::string(argv[2]));
         }
     } else if (std::string(argv[1]) == "-r") {
-        removeTask("input.txt", 2);
+        if (argc == 2) {
+            std::cout << "Unable to remove: No index provided" << std::endl;
+        } else {
+            try {
+                std::stoi(argv[2]);
+            }
+            catch(std::invalid_argument& e){
+                std::cout << "Unable to remove: index is not a number" << std::endl;
+            }
+            if (std::stoi(argv[2]) > utilityInputRowCounter("input.txt")) {
+                std::cout << "Unable to remove: Index is out of bound" << std::endl;
+            } else {
+                removeTask("input.txt", std::stoi(argv[2]));
+            }
+        }
     }
+
     return 0;
-    
+
 }
